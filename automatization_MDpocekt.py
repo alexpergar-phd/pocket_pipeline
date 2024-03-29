@@ -43,65 +43,65 @@ args = parser.parse_args()
 
 
 
-input_directory = args.input_directory
-print (input_directory)
-isovalue = args.isovalue
-pdb_step = args.pdb_step
-cpu = args.cpu
-alignment = args.structural_alignment
-input_trajectory_file= args.trajectory_file
+input_directory         = args.input_directory
+isovalue                = args.isovalue
+pdb_step                = args.pdb_step
+cpu                     = args.cpu
+alignment               = args.structural_alignment
+input_trajectory_file   = args.trajectory_file
 input_topology_filename = args.pdb_file
-epsilon = args.epsilon
-minpoints = args.min_points
+epsilon                 = args.epsilon
+minpoints               = args.min_points
                      
 def matching_pdb_traj(directory):
+  """This function matches the model file (pdb) with its trajectory in a directory."""
 
-  """This function matches de model file (pdb) with its trajectory in a directory."""
   directory = str(directory)
   trajectories_analysed = []
-  #Find the pdb files in the  directory
+
+  # Find the pdb files in the  directory
   pdb_files = [f for f in os.listdir(directory) if f.endswith(".pdb")]
-  #Find trajectory files ("xtc" or "dcd") in the directory
+  # Find trajectory files ("xtc" or "dcd") in the directory
   trajectory_files = [f for f in os.listdir(directory) if f.endswith(".xtc") or f.endswith(".dcd")]
+
+  # Skip trajectories already analysed
   trajectories_folder_analysed =  [f for f in os.listdir(directory) if f.endswith("_mdpocket")]
+
   for trajectory_folder in trajectories_folder_analysed:
     trajectory = trajectory_folder.replace("_mdpocket","")
     trajectories_analysed.append(trajectory)
     
   for trajectory_analysed in trajectories_analysed:
     trajectory_files.remove(trajectory_analysed)
-  #print(pdb_files)
-  #dictionary where pdb will be matched with the trajectory
+
+  # Dictionary where PDBs will be matched with the trajectory
   id_dic = {}
-  #print (trajectory_files)
+
   for f in pdb_files:
+
     if os.path.isfile(f):
-      pdbid_regex=re.compile(r"dyn_[0-9]+")
-      pdb_id = pdbid_regex.search(f)
-      #print (pdb_id[0])
+      pdbid_regex   = re.compile(r"dyn_[0-9]+")
+      pdb_id        = pdbid_regex.search(f)
       pdb_num_regex = re.compile(r"[0-9]+")
-      pdb_num = pdb_num_regex.search(pdb_id[0])
-      #print(pdb_num[0])
+      pdb_num       = pdb_num_regex.search(pdb_id[0])
       if f not in id_dic:
           id_dic[f] = list()
+
     for g in trajectory_files:
       if os.path.isfile(g):
-        #print( "trajectory file:", g)
-        trajid_regex = re.compile(r"trj_[0-9]+")
-        traj_id = trajid_regex.search(g)
+        trajid_regex   = re.compile(r"trj_[0-9]+")
+        traj_id        = trajid_regex.search(g)
         traj_num_regex = re.compile (r"[0-9]+")
-        traj_num = traj_num_regex.search(traj_id[0])
-        #print (traj_num[0])
+        traj_num       = traj_num_regex.search(traj_id[0])
 
       if pdb_num[0] == traj_num[0]:
           id_dic[f].append(g)
       
-  #print(id_dic)
   return(id_dic)
 
 
 
-#Perform the pockets analysis
+# Perform the pockets analysis
 def extract_ISO (
   inputfile : str,
   pathOutput : str,
@@ -635,7 +635,7 @@ def pockets (
   isovalue: float,
   pdb_step: str):
 
-  #Defining the file where the list of pdb files will be stored
+  # Defining the file where the list of pdb files will be stored
   outputFile = "snapshot_list_file_" + input_trajectory_filename + ".txt"
 
   print (outputFile)
